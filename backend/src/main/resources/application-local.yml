@@ -1,0 +1,10 @@
+# Local development: OTP is logged to the console; SMTP is not required.
+spring:
+  liquibase:
+    contexts: seed-dev
+  jpa:
+    defer-datasource-initialization: true
+
+app:
+  mail:
+    enabled: false

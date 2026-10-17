@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:electricity_ebilling_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  liquibase:
+    enabled: false
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  mail:
+    host: localhost
+    port: 1025
+
+jwt:
+  secret: test-jwt-secret-must-be-at-least-32-bytes-long
+  expiresIn: 3600
+
+app:
+  mail:
+    enabled: false
+  encryption:
+    key: 01234567890123456789012345678901
+    iv: 0123456789012345
+  billing:
+    receiver-upi-id: billing@upi

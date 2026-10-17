@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - include:
+      file: changes/001-seed-dev-data.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/002-seed-dev-billing.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/003-seed-dev-ensure-principals.yaml
+      relativeToChangelogFile: true
