@@ -1,0 +1,154 @@
+# Extra dev data: field employee, more customers, invoices, payment history.
+databaseChangeLog:
+  - changeSet:
+      id: seed-dev-field-employee
+      author: ebilling
+      context: seed-dev
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: "0"
+            sql: SELECT COUNT(*) FROM employees WHERE employee_id = 'EMP1000001'
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: id, value: "USR1000003" }
+              - column: { name: email, value: "employee@localhost" }
+              - column: { name: first_name, value: "Ops" }
+              - column: { name: last_name, value: "Staff" }
+              - column: { name: phone_number, value: "9000000002" }
+              - column: { name: is_admin, valueBoolean: false }
+              - column: { name: created_at, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updated_at, valueComputed: CURRENT_TIMESTAMP }
+        - insert:
+            tableName: employees
+            columns:
+              - column: { name: employee_id, value: "EMP1000001" }
+              - column: { name: designation, value: "Billing operator" }
+              - column: { name: salary, valueNumeric: 45000 }
+              - column: { name: user_id, value: "USR1000003" }
+
+  - changeSet:
+      id: seed-dev-customer-two
+      author: ebilling
+      context: seed-dev
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: "0"
+            sql: SELECT COUNT(*) FROM customers WHERE customer_id = 'CST1000002'
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: id, value: "USR1000004" }
+              - column: { name: email, value: "priya@localhost" }
+              - column: { name: first_name, value: "Priya" }
+              - column: { name: last_name, value: "Sharma" }
+              - column: { name: phone_number, value: "9000000003" }
+              - column: { name: is_admin, valueBoolean: false }
+              - column: { name: created_at, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updated_at, valueComputed: CURRENT_TIMESTAMP }
+        - insert:
+            tableName: customers
+            columns:
+              - column: { name: customer_id, value: "CST1000002" }
+              - column: { name: user_id, value: "USR1000004" }
+              - column: { name: address, value: "45 MG Road, Pune" }
+        - insert:
+            tableName: connection
+            columns:
+              - column: { name: id, value: "c3000001-0001-4000-8000-000000000002" }
+              - column: { name: customer_id, value: "CST1000002" }
+              - column: { name: connection_type_id, value: "a1000001-0001-4000-8000-000000000002" }
+              - column: { name: start_date, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: status, value: "ACTIVE" }
+
+  - changeSet:
+      id: seed-dev-invoices-and-payments
+      author: ebilling
+      context: seed-dev
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: "0"
+            sql: SELECT COUNT(*) FROM invoice
+      changes:
+        # Demo customer (CST1000001) — paid, unpaid, pending
+        - insert:
+            tableName: invoice
+            columns:
+              - column: { name: id, value: "d4inv001-0001-4000-8000-000000000001" }
+              - column: { name: connection_id, value: "c3000001-0001-4000-8000-000000000001" }
+              - column: { name: due_date, valueDate: "2025-08-15" }
+              - column: { name: month, valueDate: "2025-07-01" }
+              - column: { name: units, valueNumeric: 85 }
+              - column: { name: bill_amount, valueNumeric: 467.5 }
+              - column: { name: final_amount, valueNumeric: 467.5 }
+              - column: { name: payment_status, value: "PAID" }
+              - column: { name: created_at, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updated_at, valueComputed: CURRENT_TIMESTAMP }
+        - insert:
+            tableName: invoice
+            columns:
+              - column: { name: id, value: "d4inv001-0001-4000-8000-000000000002" }
+              - column: { name: connection_id, value: "c3000001-0001-4000-8000-000000000001" }
+              - column: { name: due_date, valueDate: "2025-10-15" }
+              - column: { name: month, valueDate: "2025-09-01" }
+              - column: { name: units, valueNumeric: 120 }
+              - column: { name: bill_amount, valueNumeric: 810.0 }
+              - column: { name: final_amount, valueNumeric: 810.0 }
+              - column: { name: payment_status, value: "UNPAID" }
+              - column: { name: created_at, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updated_at, valueComputed: CURRENT_TIMESTAMP }
+        - insert:
+            tableName: invoice
+            columns:
+              - column: { name: id, value: "d4inv001-0001-4000-8000-000000000003" }
+              - column: { name: connection_id, value: "c3000001-0001-4000-8000-000000000001" }
+              - column: { name: due_date, valueDate: "2025-10-20" }
+              - column: { name: month, valueDate: "2025-09-01" }
+              - column: { name: units, valueNumeric: 40 }
+              - column: { name: bill_amount, valueNumeric: 220.0 }
+              - column: { name: final_amount, valueNumeric: 220.0 }
+              - column: { name: payment_status, value: "PENDING" }
+              - column: { name: created_at, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updated_at, valueComputed: CURRENT_TIMESTAMP }
+        # Priya (CST1000002) — unpaid + failed
+        - insert:
+            tableName: invoice
+            columns:
+              - column: { name: id, value: "d4inv001-0001-4000-8000-000000000004" }
+              - column: { name: connection_id, value: "c3000001-0001-4000-8000-000000000002" }
+              - column: { name: due_date, valueDate: "2025-10-10" }
+              - column: { name: month, valueDate: "2025-09-01" }
+              - column: { name: units, valueNumeric: 350 }
+              - column: { name: bill_amount, valueNumeric: 3150.0 }
+              - column: { name: final_amount, valueNumeric: 3150.0 }
+              - column: { name: payment_status, value: "UNPAID" }
+              - column: { name: created_at, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updated_at, valueComputed: CURRENT_TIMESTAMP }
+        - insert:
+            tableName: invoice
+            columns:
+              - column: { name: id, value: "d4inv001-0001-4000-8000-000000000005" }
+              - column: { name: connection_id, value: "c3000001-0001-4000-8000-000000000002" }
+              - column: { name: due_date, valueDate: "2025-07-15" }
+              - column: { name: month, valueDate: "2025-06-01" }
+              - column: { name: units, valueNumeric: 280 }
+              - column: { name: bill_amount, valueNumeric: 2520.0 }
+              - column: { name: final_amount, valueNumeric: 2520.0 }
+              - column: { name: payment_status, value: "FAILED" }
+              - column: { name: created_at, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updated_at, valueComputed: CURRENT_TIMESTAMP }
+        # Payment history (UPI = ordinal 0)
+        - insert:
+            tableName: payment_transaction
+            columns:
+              - column: { name: id, value: "e5pay001-0001-4000-8000-000000000001" }
+              - column: { name: invoice_id, value: "d4inv001-0001-4000-8000-000000000001" }
+              - column: { name: payment_date, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: payment_amount, valueNumeric: 467.5 }
+              - column: { name: payment_type, valueNumeric: 0 }
+              - column: { name: payment_status, value: "PAID" }

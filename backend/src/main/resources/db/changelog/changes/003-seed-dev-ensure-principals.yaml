@@ -1,0 +1,80 @@
+# Idempotent repair: ensure demo login IDs exist (e.g. DB had data before Liquibase seeds).
+databaseChangeLog:
+  - changeSet:
+      id: ensure-dev-admin-usr1000001
+      author: ebilling
+      context: seed-dev
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: "0"
+            sql: SELECT COUNT(*) FROM users WHERE id = 'USR1000001'
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: id, value: "USR1000001" }
+              - column: { name: email, value: "${seedAdminEmail}" }
+              - column: { name: first_name, value: "Dev" }
+              - column: { name: last_name, value: "Admin" }
+              - column: { name: phone_number, value: "${seedAdminPhone}" }
+              - column: { name: is_admin, valueBoolean: true }
+              - column: { name: created_at, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updated_at, valueComputed: CURRENT_TIMESTAMP }
+
+  - changeSet:
+      id: ensure-dev-employee-emp1000001
+      author: ebilling
+      context: seed-dev
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: "0"
+            sql: SELECT COUNT(*) FROM employees WHERE employee_id = 'EMP1000001'
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: id, value: "USR1000003" }
+              - column: { name: email, value: "employee@localhost" }
+              - column: { name: first_name, value: "Ops" }
+              - column: { name: last_name, value: "Staff" }
+              - column: { name: phone_number, value: "9000000002" }
+              - column: { name: is_admin, valueBoolean: false }
+              - column: { name: created_at, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updated_at, valueComputed: CURRENT_TIMESTAMP }
+        - insert:
+            tableName: employees
+            columns:
+              - column: { name: employee_id, value: "EMP1000001" }
+              - column: { name: designation, value: "Billing operator" }
+              - column: { name: salary, valueNumeric: 45000 }
+              - column: { name: user_id, value: "USR1000003" }
+
+  - changeSet:
+      id: ensure-dev-customer-cst1000001
+      author: ebilling
+      context: seed-dev
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: "0"
+            sql: SELECT COUNT(*) FROM customers WHERE customer_id = 'CST1000001'
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: id, value: "USR1000002" }
+              - column: { name: email, value: "customer@localhost" }
+              - column: { name: first_name, value: "Demo" }
+              - column: { name: last_name, value: "Customer" }
+              - column: { name: phone_number, value: "9000000001" }
+              - column: { name: is_admin, valueBoolean: false }
+              - column: { name: created_at, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updated_at, valueComputed: CURRENT_TIMESTAMP }
+        - insert:
+            tableName: customers
+            columns:
+              - column: { name: customer_id, value: "CST1000001" }
+              - column: { name: user_id, value: "USR1000002" }
+              - column: { name: address, value: "123 Demo Street" }
